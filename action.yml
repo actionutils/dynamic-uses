@@ -1,0 +1,31 @@
+name: Dynamic Uses
+description: Dynamically resolve and use another GitHub action. Workaround for https://github.com/actions/runner/issues/895
+author: haya14busa
+inputs:
+  uses:
+    description: Action reference or path, e.g. `actions/setup-node@v3`
+    required: true
+  with:
+    description: 'JSON-ified `inputs` for the action, e.g. `{"node-version": "18"}`'
+    required: false
+    default: "{}"
+outputs:
+  outputs:
+    description: 'JSON-ified `outputs` from the action, e.g. `{"node-version": "v18.12.0", "cache-hit": true}`'
+    value: ${{ steps.target_action.outputs.outputs }}
+runs:
+  using: composite
+  steps:
+    - name: Setup
+      id: setup
+      shell: bash
+      run: $GITHUB_ACTION_PATH/setup.sh "${{ inputs.uses }}" "${{ inputs.with || '{}' }}"
+
+    - name: Run Wrapper
+      id: target_action
+      uses: ${{ steps.setup.outputs.temp_dir }}
+
+    - name: Cleanup
+      if: always()
+      shell: bash
+      run: $GITHUB_ACTION_PATH/cleanup.sh "${{ steps.setup.outputs.temp_dir }}"
