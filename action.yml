@@ -12,7 +12,7 @@ inputs:
 outputs:
   outputs:
     description: 'JSON-ified `outputs` from the action, e.g. `{"node-version": "v18.12.0", "cache-hit": true}`'
-    value: ${{ steps.target_action.outputs.outputs }}
+    value: ${{ steps.run.outputs.outputs }}
 runs:
   using: composite
   steps:
@@ -22,8 +22,9 @@ runs:
       run: $GITHUB_ACTION_PATH/setup.sh "${{ inputs.uses }}" "${{ inputs.with || '{}' }}"
 
     - name: Run Wrapper
-      id: target_action
-      uses: ${{ steps.setup.outputs.temp_dir }}
+      id: run
+      # Cannot use `${{ steps.setup.outputs.temp_dir }}`
+      uses: ./../.tmp-dynamic-uses
 
     - name: Cleanup
       if: always()

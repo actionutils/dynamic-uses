@@ -5,8 +5,8 @@ set -e
 USES="$1"
 WITH="$2"
 
-# Create unique temporary directory outside the repository
-TEMP_DIR="../.tmp-dynamic-uses-$(date +%s)-$$"
+# Create temporary directory outside the repository
+TEMP_DIR="../.tmp-dynamic-uses"
 mkdir -p "$TEMP_DIR"
 chmod 700 "$TEMP_DIR"
 
